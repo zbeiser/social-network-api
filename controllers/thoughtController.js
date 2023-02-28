@@ -20,7 +20,18 @@ module.exports = {
   // Create a new thought
   createThought(req, res) {
     Thought.create(req.body)
-      .then((thought) => res.json(thought))
+      .then((thought) => {
+        return User.findOneAndUpdate(
+          { _id: req.body.userId },
+          { $addToSet: { thoughts: thought._id } },
+          { new: true }
+        )
+      })
+      .then((user) =>
+        !user
+          ? res.status(404).json({ message: 'Created thought but no user associated with ID' })
+          : res.json({ message: 'Thought created' })
+      )
       .catch((err) => {
         console.log(err);
         return res.status(500).json(err);
@@ -33,10 +44,10 @@ module.exports = {
       { $set: req.body },
       { runValidators: true, new: true }
     )
-      .then((course) =>
-        !course
-          ? res.status(404).json({ message: 'No course with this id!' })
-          : res.json(course)
+      .then((thought) =>
+        !thought
+          ? res.status(404).json({ message: 'No thought with this id!' })
+          : res.json(thought)
       )
       .catch((err) => res.status(500).json(err));
   },
