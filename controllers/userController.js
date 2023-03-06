@@ -29,7 +29,7 @@ module.exports = {
   // Update a user
   updateUser(req, res) {
     User.findOneAndUpdate(
-      { users: req.params.userId },
+      { _id: req.params.userId },
       { $set: { username: req.body.username, email: req.body.email } },
       { new: true }
     )
@@ -38,7 +38,7 @@ module.exports = {
           ? res.status(404).json({
             message: 'No such user exists',
           })
-          : res.json({ message: 'User successfully dupdated' })
+          : res.json({ message: 'User successfully updated' })
       )
       .catch((err) => {
         console.log(err);
